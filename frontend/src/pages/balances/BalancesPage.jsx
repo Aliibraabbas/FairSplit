@@ -70,7 +70,7 @@ export default function BalancesPage() {
               <div key={b.user.id} className={`balance-item ${parseFloat(b.balance) >= 0 ? 'positive' : 'negative'}`}>
                 <span className="balance-user">{b.user.username}</span>
                 <span className="balance-amount">
-                  {parseFloat(b.balance) >= 0 ? '+' : ''}{parseFloat(b.balance).toFixed(2)} €
+                  {parseFloat(b.balance) >= 0 ? '+' : ''}{parseFloat(b.balance).toFixed(2)} {group.currency_symbol}
                 </span>
               </div>
             ))}
@@ -80,7 +80,7 @@ export default function BalancesPage() {
                   {b.guest.name}
                   <span className="badge badge-guest" style={{ marginLeft: '0.5rem' }}>Invité</span>
                 </span>
-                <span className="balance-amount">{parseFloat(b.balance).toFixed(2)} €</span>
+                <span className="balance-amount">{parseFloat(b.balance).toFixed(2)} {group.currency_symbol}</span>
               </div>
             ))}
           </div>
@@ -101,7 +101,7 @@ export default function BalancesPage() {
                     {s.from.type === 'guest' && <span className="badge badge-guest" style={{ marginLeft: '0.4rem' }}>Invité</span>}
                   </span>
                   <span className="settlement-arrow">doit</span>
-                  <span className="settlement-amount">{parseFloat(s.amount).toFixed(2)} €</span>
+                  <span className="settlement-amount">{parseFloat(s.amount).toFixed(2)} {group.currency_symbol}</span>
                   <span className="settlement-arrow">à</span>
                   <span className="settlement-to">{s.to.name}</span>
                 </div>

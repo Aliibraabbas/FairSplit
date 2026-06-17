@@ -2,8 +2,15 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import groupService from '../../services/groupService'
 
+const CURRENCIES = [
+  { value: 'EUR', label: 'Euro (€)' },
+  { value: 'USD', label: 'Dollar américain ($)' },
+  { value: 'GBP', label: 'Livre sterling (£)' },
+  { value: 'LBP', label: 'Livre libanaise' },
+]
+
 export default function GroupCreatePage() {
-  const [form, setForm] = useState({ name: '', description: '' })
+  const [form, setForm] = useState({ name: '', description: '', currency: 'EUR' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -50,6 +57,20 @@ export default function GroupCreatePage() {
             placeholder="Description optionnelle..."
             rows={3}
           />
+        </div>
+        <div className="form-group">
+          <label>Devise *</label>
+          <select
+            value={form.currency}
+            onChange={(e) => setForm({ ...form, currency: e.target.value })}
+            required
+          >
+            {CURRENCIES.map((currency) => (
+              <option key={currency.value} value={currency.value}>
+                {currency.label}
+              </option>
+            ))}
+          </select>
         </div>
         <button type="submit" className="btn-primary btn-full" disabled={loading}>
           {loading ? 'Création...' : 'Créer le groupe'}

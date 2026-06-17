@@ -15,26 +15,38 @@ def calculate_balances(group):
     guest_balances = defaultdict(Decimal)
     guest_map = {}
 
-    for expense in group.expenses.prefetch_related('participants', 'guest_participants').select_related('paid_by'):
+    for expense in group.expenses.prefetch_related('participants', 'guest_participants', 'custom_shares__user', 'custom_shares__guest').select_related('paid_by'):
         payer = expense.paid_by
-        participants = list(expense.participants.all())
-        guests = list(expense.guest_participants.all())
-        total_count = len(participants) + len(guests)
-
-        if total_count == 0:
-            continue
-
-        share = expense.amount / Decimal(total_count)
         user_map[payer.id] = payer
         balances[payer.id] += expense.amount
 
-        for participant in participants:
-            user_map[participant.id] = participant
-            balances[participant.id] -= share
+        if expense.split_type == 'custom':
+            # Répartition personnalisée
+            for share in expense.custom_shares.all():
+                if share.user:
+                    user_map[share.user.id] = share.user
+                    balances[share.user.id] -= share.amount
+                elif share.guest:
+                    guest_map[share.guest.id] = share.guest
+                    guest_balances[share.guest.id] -= share.amount
+        else:
+            # Répartition égale (comportement par défaut)
+            participants = list(expense.participants.all())
+            guests = list(expense.guest_participants.all())
+            total_count = len(participants) + len(guests)
 
-        for guest in guests:
-            guest_map[guest.id] = guest
-            guest_balances[guest.id] -= share
+            if total_count == 0:
+                continue
+
+            share = expense.amount / Decimal(total_count)
+
+            for participant in participants:
+                user_map[participant.id] = participant
+                balances[participant.id] -= share
+
+            for guest in guests:
+                guest_map[guest.id] = guest
+                guest_balances[guest.id] -= share
 
     # Apply reimbursements
     for r in group.reimbursements.select_related('from_user', 'from_guest', 'to_user').all():

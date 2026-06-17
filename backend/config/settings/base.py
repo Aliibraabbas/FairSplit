@@ -100,7 +100,37 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'FairSplit API',
-    'DESCRIPTION': 'API pour le partage de dépenses entre amis',
+    'DESCRIPTION': '''
+    API REST complète pour le partage de dépenses entre amis et groupes.
+    
+    ## Fonctionnalités principales
+    
+    - **Authentification** : Inscription, connexion avec token
+    - **Groupes** : Création, gestion des membres et invités
+    - **Dépenses** : Ajout de dépenses avec répartition égale ou personnalisée
+    - **Soldes** : Calcul automatique des soldes et remboursements suggérés
+    - **Remboursements** : Enregistrement des remboursements effectués
+    - **Invitations** : Création de liens d'invitation sécurisés
+    - **Export** : Export CSV et Excel des données du groupe
+    - **Devises multiples** : Support de EUR, USD, GBP, LBP
+    
+    ## Authentification
+    
+    Utilisez le header `Authorization: Token <votre_token>` pour les endpoints protégés.
+    ''',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api',
+    'SERVERS': [
+        {'url': 'http://localhost:8000', 'description': 'Serveur de développement'},
+    ],
+    'TAGS': [
+        {'name': 'auth', 'description': 'Authentification et gestion des utilisateurs'},
+        {'name': 'groups', 'description': 'Gestion des groupes de dépenses'},
+        {'name': 'expenses', 'description': 'Gestion des dépenses'},
+        {'name': 'balances', 'description': 'Calcul des soldes et remboursements'},
+        {'name': 'invitations', 'description': 'Invitations par lien'},
+        {'name': 'export', 'description': 'Export CSV et Excel'},
+    ],
 }

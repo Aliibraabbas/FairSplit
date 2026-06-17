@@ -1,56 +1,8 @@
 import secrets
 from datetime import timedelta
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils import timezone
-
-User = get_user_model()
-
-CURRENCY_CHOICES = [
-    ('EUR', 'Euro (€)'),
-    ('USD', 'Dollar américain ($)'),
-    ('GBP', 'Livre sterling (£)'),
-    ('LBP', 'Livre libanaise (ل.ل)'),
-]
-
-CURRENCY_SYMBOLS = {
-    'EUR': '€',
-    'USD': '$',
-    'GBP': '£',
-    'LBP': 'ل.ل',
-}
-
-
-class Group(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='EUR')
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_groups')
-    members = models.ManyToManyField(User, related_name='expense_groups', blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return self.name
-    
-    def get_currency_symbol(self):
-        return CURRENCY_SYMBOLS.get(self.currency, self.currency)
-
-
-class GuestMember(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='guest_members')
-    name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = [['group', 'name']]
-        ordering = ['name']
-
-    def __str__(self):
-        return f'{self.name} (invité dans {self.group.name})'
+from .models import Group
 
 
 class GroupInvitation(models.Model):

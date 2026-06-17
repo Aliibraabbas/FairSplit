@@ -18,6 +18,11 @@ export default function GroupDetailPage() {
   const [activeTab, setActiveTab] = useState('expenses')
   const [suggestions, setSuggestions] = useState([])
   const searchTimeout = useRef(null)
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [invitationLink, setInvitationLink] = useState('')
+  const [copied, setCopied] = useState(false)
+  const [exportingCsv, setExportingCsv] = useState(false)
+  const [exportingExcel, setExportingExcel] = useState(false)
 
   const handleMemberInputChange = (e) => {
     const val = e.target.value
@@ -126,6 +131,45 @@ export default function GroupDetailPage() {
     }
   }
 
+  const handleExportCsv = async () => {
+    setExportingCsv(true)
+    try {
+      await groupService.exportCsv(id)
+    } catch (err) {
+      alert('Erreur lors de l\'export CSV')
+    } finally {
+      setExportingCsv(false)
+    }
+  }
+
+  const handleExportExcel = async () => {
+    setExportingExcel(true)
+    try {
+      await groupService.exportExcel(id)
+    } catch (err) {
+      alert('Erreur lors de l\'export Excel')
+    } finally {
+      setExportingExcel(false)
+    }
+  }
+
+  const handleCreateInvitation = async () => {
+    try {
+      const invitation = await groupService.createInvitation(id, { days_valid: 7, max_uses: 0 })
+      const link = `${window.location.origin}/invite/${invitation.token}`
+      setInvitationLink(link)
+      setShowInviteModal(true)
+    } catch (err) {
+      alert('Erreur lors de la création de l\'invitation')
+    }
+  }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(invitationLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0)
   const isCreator = group?.created_by?.id === user?.id
 
@@ -140,7 +184,13 @@ export default function GroupDetailPage() {
           {group.description && <p className="subtitle">{group.description}</p>}
         </div>
         <div className="header-actions">
-          <Link to={`/groups/${id}/balances`} className="btn-secondary">📊 Soldes</Link>
+          <button onClick={handleExportCsv} className="btn-secondary" disabled={exportingCsv}>
+            {exportingCsv ? 'Export CSV...' : 'Export CSV'}
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary" disabled={exportingExcel}>
+            {exportingExcel ? 'Export Excel...' : 'Export Excel'}
+          </button>
+          <Link to={`/groups/${id}/balances`} className="btn-secondary">Soldes</Link>
           <Link to={`/groups/${id}/expenses/new`} className="btn-primary">+ Dépense</Link>
         </div>
       </div>
@@ -172,7 +222,7 @@ export default function GroupDetailPage() {
           ) : (
             <>
               <div className="total-bar">
-                Total du groupe : <strong>{totalExpenses.toFixed(2)} €</strong>
+                Total du groupe : <strong>{totalExpenses.toFixed(2)} {group.currency_symbol}</strong>
               </div>
               <div className="expense-list">
                 {expenses.map((expense) => (
@@ -182,7 +232,7 @@ export default function GroupDetailPage() {
                         <span className="expense-title">{expense.title}</span>
                         <span className="expense-category">{expense.category_display}</span>
                       </div>
-                      <span className="expense-amount">{parseFloat(expense.amount).toFixed(2)} €</span>
+                      <span className="expense-amount">{parseFloat(expense.amount).toFixed(2)} {expense.currency_symbol}</span>
                     </div>
                     <div className="expense-meta">
                       <span>Payé par <strong>{expense.paid_by_detail?.username}</strong></span>
@@ -241,6 +291,12 @@ export default function GroupDetailPage() {
             ))}
           </ul>
 
+          <div className="add-member-section">
+            <button onClick={handleCreateInvitation} className="btn-secondary btn-full" style={{ marginBottom: '1rem' }}>
+              Créer un lien d'invitation
+            </button>
+          </div>
+
           <form onSubmit={handleAddMember} className="add-member-form">
             <h3>Ajouter un membre</h3>
             {memberError && <div className="error-message">{memberError}</div>}
@@ -286,6 +342,28 @@ export default function GroupDetailPage() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {showInviteModal && (
+        <div className="modal-overlay" onClick={() => setShowInviteModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Lien d'invitation</h2>
+              <button className="modal-close" onClick={() => setShowInviteModal(false)}>×</button>
+            </div>
+            <p>Partagez ce lien pour inviter des personnes à rejoindre le groupe :</p>
+            <div className="invitation-link-box">{invitationLink}</div>
+            <button 
+              className={`btn-copy ${copied ? 'copied' : ''}`}
+              onClick={handleCopyLink}
+            >
+              {copied ? 'Copié !' : 'Copier le lien'}
+            </button>
+            <p className="hint-text" style={{ marginTop: '1rem' }}>
+              Ce lien est valide pendant 7 jours et peut être utilisé un nombre illimité de fois.
+            </p>
+          </div>
         </div>
       )}
     </div>

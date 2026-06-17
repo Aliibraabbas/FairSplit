@@ -10,6 +10,7 @@ import GroupCreatePage from '../pages/groups/GroupCreatePage'
 import GroupDetailPage from '../pages/groups/GroupDetailPage'
 import ExpenseFormPage from '../pages/expenses/ExpenseFormPage'
 import BalancesPage from '../pages/balances/BalancesPage'
+import InvitePage from '../pages/InvitePage'
 
 function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ function AppRoutes() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+        <Route path="/invite/:token" element={<InvitePage />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/groups" element={<ProtectedRoute><GroupListPage /></ProtectedRoute>} />
         <Route path="/groups/new" element={<ProtectedRoute><GroupCreatePage /></ProtectedRoute>} />

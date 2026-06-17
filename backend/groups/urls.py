@@ -7,4 +7,7 @@ app_name = 'groups'
 router = DefaultRouter()
 router.register(r'', views.GroupViewSet, basename='group')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('invitations/<str:token>/', views.get_invitation_info, name='invitation-info'),
+    path('invitations/<str:token>/join/', views.join_group_by_invitation, name='invitation-join'),
+] + router.urls
