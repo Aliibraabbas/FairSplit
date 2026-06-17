@@ -1,19 +1,13 @@
 import { Outlet } from 'react-router-dom'
+import Navbar from '../components/layout/Navbar'
 
 function MainLayout() {
   return (
     <div className="main-layout">
-      <header>
-        <nav>
-          {/* Navigation will be added later */}
-        </nav>
-      </header>
-      <main>
+      <Navbar />
+      <main className="main-content">
         <Outlet />
       </main>
-      <footer>
-        {/* Footer content */}
-      </footer>
     </div>
   )
 }

@@ -1,28 +1,19 @@
-import axiosInstance from '../api/axiosConfig'
+import api from '../api/axiosConfig'
 
-export const groupService = {
-  getGroups: async () => {
-    const response = await axiosInstance.get('/groups/')
-    return response.data
-  },
-
-  getGroup: async (id) => {
-    const response = await axiosInstance.get(`/groups/${id}/`)
-    return response.data
-  },
-
-  createGroup: async (groupData) => {
-    const response = await axiosInstance.post('/groups/', groupData)
-    return response.data
-  },
-
-  updateGroup: async (id, groupData) => {
-    const response = await axiosInstance.put(`/groups/${id}/`, groupData)
-    return response.data
-  },
-
-  deleteGroup: async (id) => {
-    const response = await axiosInstance.delete(`/groups/${id}/`)
-    return response.data
-  },
+const groupService = {
+  getGroups: () => api.get('/groups/').then((r) => r.data),
+  getGroup: (id) => api.get(`/groups/${id}/`).then((r) => r.data),
+  createGroup: (data) => api.post('/groups/', data).then((r) => r.data),
+  updateGroup: (id, data) => api.put(`/groups/${id}/`, data).then((r) => r.data),
+  deleteGroup: (id) => api.delete(`/groups/${id}/`),
+  addMember: (groupId, username) =>
+    api.post(`/groups/${groupId}/members/add/`, { username }).then((r) => r.data),
+  removeMember: (groupId, userId) =>
+    api.post(`/groups/${groupId}/members/remove/`, { user_id: userId }),
+  removeGuest: (groupId, guestId) =>
+    api.post(`/groups/${groupId}/guests/remove/`, { guest_id: guestId }),
+  searchUsers: (q) =>
+    api.get('/accounts/search/', { params: { q } }).then((r) => r.data),
 }
+
+export default groupService

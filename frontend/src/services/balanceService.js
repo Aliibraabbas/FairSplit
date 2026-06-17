@@ -1,13 +1,10 @@
-import axiosInstance from '../api/axiosConfig'
+import api from '../api/axiosConfig'
 
-export const balanceService = {
-  getBalances: async (groupId) => {
-    const response = await axiosInstance.get(`/groups/${groupId}/balances/`)
-    return response.data
-  },
-
-  getSettlements: async (groupId) => {
-    const response = await axiosInstance.get(`/groups/${groupId}/settlements/`)
-    return response.data
-  },
+const balanceService = {
+  getBalances: (groupId) => api.get(`/groups/${groupId}/balances/`).then((r) => r.data),
+  getSettlements: (groupId) => api.get(`/groups/${groupId}/balances/settlements/`).then((r) => r.data),
+  recordReimbursement: (groupId, data) =>
+    api.post(`/groups/${groupId}/balances/reimburse/`, data).then((r) => r.data),
 }
+
+export default balanceService

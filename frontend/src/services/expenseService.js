@@ -1,28 +1,12 @@
-import axiosInstance from '../api/axiosConfig'
+import api from '../api/axiosConfig'
 
-export const expenseService = {
-  getExpenses: async (groupId) => {
-    const response = await axiosInstance.get(`/groups/${groupId}/expenses/`)
-    return response.data
-  },
-
-  getExpense: async (id) => {
-    const response = await axiosInstance.get(`/expenses/${id}/`)
-    return response.data
-  },
-
-  createExpense: async (groupId, expenseData) => {
-    const response = await axiosInstance.post(`/groups/${groupId}/expenses/`, expenseData)
-    return response.data
-  },
-
-  updateExpense: async (id, expenseData) => {
-    const response = await axiosInstance.put(`/expenses/${id}/`, expenseData)
-    return response.data
-  },
-
-  deleteExpense: async (id) => {
-    const response = await axiosInstance.delete(`/expenses/${id}/`)
-    return response.data
-  },
+const expenseService = {
+  getExpenses: (groupId) => api.get(`/groups/${groupId}/expenses/`).then((r) => r.data),
+  getExpense: (groupId, id) => api.get(`/groups/${groupId}/expenses/${id}/`).then((r) => r.data),
+  createExpense: (groupId, data) => api.post(`/groups/${groupId}/expenses/`, data).then((r) => r.data),
+  updateExpense: (groupId, id, data) =>
+    api.put(`/groups/${groupId}/expenses/${id}/`, data).then((r) => r.data),
+  deleteExpense: (groupId, id) => api.delete(`/groups/${groupId}/expenses/${id}/`),
 }
+
+export default expenseService
