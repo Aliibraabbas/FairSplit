@@ -131,4 +131,4 @@ Consultez le fichier `PROJECT_PLAN.md` pour le plan détaillé du projet incluan
 
 ## 📝 Licence
 
-Projet académique - IIM A5 2025
+Projet académique - IIM A5 2026
